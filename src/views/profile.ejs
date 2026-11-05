@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+<h1>Mi perfil</h1>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+  <div class="card">
+    <h2 style="margin-top:0">Datos</h2>
+    <form method="post" action="/profile/email">
+      <div class="field"><label>Nombre</label><input value="<%= profile.name %>" disabled></div>
+      <div class="field"><label>Email</label><input name="email" value="<%= profile.email %>"></div>
+      <% if (SECURE) { %><input type="hidden" name="_csrf" value="<%= csrfToken %>"><% } %>
+      <button class="btn accent">Guardar email</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">Token de API (JWT)</h2>
+    <p style="color:var(--muted);font-size:13px">Lo usa la API en <code>/api/me</code> y <code>/api/admin/users</code>.</p>
+    <pre style="white-space:pre-wrap;word-break:break-all"><code><%= apiToken %></code></pre>
+  </div>
+</div>
+
+<div class="vuln <%= SECURE ? 'safe' : '' %>">
+  <% if (!SECURE) { %>
+    <strong>CSRF + JWT mal validado.</strong><br>
+    <strong>CSRF:</strong> el formulario de email no lleva token anti-CSRF ni la
+    cookie usa SameSite, asi que una pagina externa puede cambiar el email de la
+    victima logueada (ver <code>informe/csrf-poc.html</code>).<br>
+    <strong>JWT:</strong> la API acepta tokens con <code>alg:none</code> o firmados
+    con el secreto debil <code>secret</code>, permitiendo falsificar
+    <code>role:admin</code> y leer <code>/api/admin/users</code>.<br>
+    <strong>Fix:</strong> token anti-CSRF + cookie SameSite; validar algoritmo,
+    secreto fuerte y expiracion (modo seguro).
+  <% } else { %>
+    <strong>Perfil y API endurecidos.</strong> El cambio de email exige token
+    anti-CSRF y la cookie es SameSite=strict. La API solo acepta JWT HS256 con el
+    secreto fuerte y expiracion vigente.
+  <% } %>
+</div>
+<%- include('partials/foot') %>

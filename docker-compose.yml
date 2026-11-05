@@ -1,0 +1,22 @@
+# Levanta las dos versiones de VulnShop desde el mismo codigo.
+#   docker compose up --build
+# Vulnerable:  http://localhost:18080
+# Segura:      http://localhost:18081
+services:
+  vulnerable:
+    build: .
+    environment:
+      MODE: vulnerable
+      PORT: 8080
+    ports:
+      - "18080:8080"
+
+  secure:
+    build: .
+    environment:
+      MODE: secure
+      PORT: 8081
+      JWT_SECRET: c8f2a1e9b7d4306f5a2c9e1b8d7f4a63e0c5b29d1f8a7e34
+      SESSION_SECRET: b1d9f3a7c5e208146b9d7f3a1c8e5b20
+    ports:
+      - "18081:8081"

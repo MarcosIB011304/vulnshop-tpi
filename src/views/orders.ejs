@@ -1,0 +1,31 @@
+<%- include('partials/head') %>
+<h1>Mis pedidos</h1>
+<div class="card">
+  <table>
+    <thead><tr><th>Pedido</th><th>Fecha</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      <% orders.forEach(function(o){ %>
+        <tr>
+          <td>#<%= o.id %></td>
+          <td><%= o.created_at %></td>
+          <td>$ <%= o.total.toLocaleString('es-AR') %></td>
+          <td><span class="pill"><%= o.status %></span></td>
+          <td><a href="/orders/<%= o.id %>">Ver</a></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% if (orders.length === 0) { %><p style="color:var(--muted)">Todavia no tenes pedidos.</p><% } %>
+</div>
+<div class="vuln <%= SECURE ? 'safe' : '' %>">
+  <% if (!SECURE) { %>
+    <strong>IDOR en el detalle de pedido.</strong> El detalle se abre en
+    <code>/orders/:id</code> sin verificar el propietario. Entrá a
+    <code>/orders/2</code> estando logueado como Marcos y vas a ver el pedido de
+    Lucia. <strong>Fix:</strong> controlar que el pedido sea del usuario (modo seguro).
+  <% } else { %>
+    <strong>Pedidos protegidos.</strong> El servidor verifica que el pedido
+    pertenezca al usuario (o que sea admin); si no, responde 403.
+  <% } %>
+</div>
+<%- include('partials/foot') %>

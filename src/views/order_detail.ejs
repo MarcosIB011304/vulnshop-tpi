@@ -1,0 +1,17 @@
+<%- include('partials/head') %>
+<a href="/orders" style="font-size:13px">&larr; Volver a mis pedidos</a>
+<h1>Pedido #<%= order.id %></h1>
+<div class="card">
+  <p style="color:var(--muted);margin-top:0">Fecha: <%= order.created_at %> &middot; Estado: <span class="pill"><%= order.status %></span></p>
+  <p style="color:var(--muted)">Cliente: <%= owner.name %> (<%= owner.email %>)</p>
+  <table>
+    <thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(i){ %>
+        <tr><td><%= i.name %></td><td><%= i.qty %></td><td>$ <%= i.price.toLocaleString('es-AR') %></td></tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <div style="text-align:right;font-weight:800;margin-top:10px">Total: $ <%= order.total.toLocaleString('es-AR') %></div>
+</div>
+<%- include('partials/foot') %>

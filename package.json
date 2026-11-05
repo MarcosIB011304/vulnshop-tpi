@@ -1,0 +1,20 @@
+{
+  "name": "vulnshop",
+  "version": "1.0.0",
+  "description": "Tienda deliberadamente vulnerable para el TPI de Seguridad en el Desarrollo de Software (UTN). Un mismo codigo levanta una version vulnerable y una version segura segun la variable MODE.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "seed": "node src/seed.js",
+    "dev": "node src/app.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0"
+  }
+}

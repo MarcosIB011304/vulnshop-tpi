@@ -1,0 +1,24 @@
+<%- include('partials/head') %>
+<h1>Carrito</h1>
+<% if (cart.length === 0) { %>
+  <div class="card">Tu carrito esta vacio. <a href="/">Ver catalogo</a></div>
+<% } else { %>
+  <div class="card">
+    <% cart.forEach(function(i){ %>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div class="thumb" style="width:44px;height:44px;border-radius:8px;font-size:22px;border:1px solid var(--border)"><%= i.emoji %></div>
+        <div style="flex:1"><%= i.name %></div>
+        <div style="color:var(--muted)">x<%= i.qty %></div>
+        <div class="price">$ <%= (i.price*i.qty).toLocaleString('es-AR') %></div>
+      </div>
+    <% }); %>
+    <div style="display:flex;justify-content:space-between;font-weight:800;font-size:17px;margin-top:12px">
+      <span>Total</span><span>$ <%= total.toLocaleString('es-AR') %></span>
+    </div>
+    <form method="post" action="/cart/checkout" style="margin-top:12px">
+      <button class="btn accent">Finalizar compra</button>
+      <% if (!user) { %><span style="color:var(--muted);font-size:13px"> (necesitas iniciar sesion)</span><% } %>
+    </form>
+  </div>
+<% } %>
+<%- include('partials/foot') %>

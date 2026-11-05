@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+<h1>Catalogo</h1>
+<p style="color:var(--muted);margin-top:0">Tienda de ejemplo del TPI.<% if (q) { %> Resultados para "<%= q %>".<% } %></p>
+
+<% if (error) { %><div class="error">Error SQL devuelto al usuario: <%= error %></div><% } %>
+
+<div class="grid">
+  <% products.forEach(function(p){ %>
+    <div class="product">
+      <div class="thumb"><%= p.emoji %></div>
+      <div class="info">
+        <div style="font-weight:600"><%= p.name %></div>
+        <div style="color:var(--muted);font-size:12px;margin:2px 0 8px"><%= p.category %></div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="price">$ <%= p.price.toLocaleString('es-AR') %></span>
+          <a class="btn" href="/product/<%= p.id %>">Ver</a>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
+<% if (products.length === 0 && !error) { %><p style="color:var(--muted)">No se encontraron productos.</p><% } %>
+
+<% if (sqlShown) { %>
+  <div class="vuln <%= SECURE ? 'safe' : '' %>">
+    <strong><%= SECURE ? 'Consulta parametrizada (segura)' : 'SQL Injection en el buscador' %></strong>
+    <pre><code><%= sqlShown %></code></pre>
+    <% if (!SECURE) { %>
+      El texto del usuario se concatena en la query. Probá en el buscador:
+      <code>' UNION SELECT id,email,password,role,id,email FROM users -- </code>
+      para volcar la tabla <code>users</code>. <strong>Fix:</strong> usar parametros (como en el modo seguro).
+    <% } else { %>
+      El valor del usuario viaja como parametro (<code>?</code>) y nunca se interpreta como SQL.
+    <% } %>
+  </div>
+<% } %>
+<%- include('partials/foot') %>

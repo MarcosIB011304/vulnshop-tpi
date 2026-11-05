@@ -1,0 +1,52 @@
+<%- include('partials/head') %>
+<a href="/" style="font-size:13px">&larr; Volver al catalogo</a>
+<h1><%= product.name %></h1>
+<div class="card" style="display:flex;gap:18px;align-items:center;margin-bottom:16px">
+  <div class="thumb" style="width:120px;height:120px;border-radius:10px;font-size:56px;border:1px solid var(--border)"><%= product.emoji %></div>
+  <div>
+    <div class="price" style="font-size:22px">$ <%= product.price.toLocaleString('es-AR') %></div>
+    <p style="color:var(--muted)"><%= product.description %></p>
+    <form method="post" action="/cart/add/<%= product.id %>"><button class="btn accent">Agregar al carrito</button></form>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Resenas</h2>
+  <% reviews.forEach(function(r){ %>
+    <div class="review">
+      <div style="font-weight:600"><%= r.author %> &middot; <%= '★'.repeat(r.rating) %></div>
+      <div style="margin-top:3px">
+        <%# Punto clave del XSS almacenado: %>
+        <% if (SECURE) { %>
+          <%= r.body %>
+        <% } else { %>
+          <%- r.body %>
+        <% } %>
+      </div>
+    </div>
+  <% }); %>
+
+  <form method="post" action="/product/<%= product.id %>/review" style="margin-top:14px">
+    <div class="field"><label>Tu resena</label><textarea name="body" rows="2" placeholder="Tu opinion..."></textarea></div>
+    <div class="field" style="max-width:120px"><label>Puntaje</label>
+      <select name="rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+    </div>
+    <button class="btn">Publicar resena</button>
+  </form>
+</div>
+
+<div class="vuln <%= SECURE ? 'safe' : '' %>">
+  <% if (!SECURE) { %>
+    <strong>XSS almacenado en resenas.</strong> La resena se muestra sin escapar
+    (<code>&lt;%- r.body %&gt;</code>). Publicá
+    <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code> y se ejecuta en
+    el navegador de cualquiera que abra el producto. Como la cookie no es HttpOnly,
+    se puede robar la sesion. <strong>Fix:</strong> escapar la salida, cookie
+    HttpOnly y CSP (modo seguro).
+  <% } else { %>
+    <strong>Resenas endurecidas.</strong> La salida se escapa
+    (<code>&lt;%= r.body %&gt;</code>), la cookie es HttpOnly y una cabecera CSP
+    bloquea los scripts inline inyectados.
+  <% } %>
+</div>
+<%- include('partials/foot') %>
