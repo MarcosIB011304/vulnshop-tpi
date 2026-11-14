@@ -4,20 +4,20 @@
   <% if (error) { %><div class="error"><%= error %></div><% } %>
   <form class="card" method="post" action="/login">
     <div class="field"><label>Email</label><input name="email" value="<%= email %>" autocomplete="off"></div>
-    <div class="field"><label>Contrasena</label><input type="password" name="password" autocomplete="off"></div>
+    <div class="field"><label>Contraseña</label><input type="password" name="password" autocomplete="off"></div>
     <button class="btn accent" style="width:100%">Ingresar</button>
   </form>
-  <div class="vuln <%= SECURE ? 'safe' : '' %>">
+  <details class="vuln <%= SECURE ? 'safe' : '' %>" open>
+    <summary><%= SECURE ? '🛡 Nota de seguridad (TPI) — Login endurecido' : '⚠ Nota de seguridad (TPI) — SQLi en login + fuerza bruta' %></summary>
     <% if (!SECURE) { %>
-      <strong>SQLi en login + fuerza bruta.</strong> Probá con email
-      <code>' OR '1'='1' -- </code> y cualquier contrasena: entras como admin.
-      Ademas no hay limite de intentos. <strong>Fix:</strong> consulta parametrizada,
-      hash de contrasenas y rate limiting (modo seguro).
+      Probá con email <code>' OR '1'='1' -- </code> y cualquier contraseña: entrás
+      como admin. Además no hay límite de intentos. <strong>Fix:</strong> consulta
+      parametrizada, hash de contraseñas y rate limiting (modo seguro).
     <% } else { %>
-      <strong>Login endurecido.</strong> Consulta parametrizada, contrasenas con
-      scrypt y maximo 5 intentos cada 5 minutos por IP.
+      Consulta parametrizada, contraseñas con scrypt y máximo 5 intentos cada 5
+      minutos por IP.
     <% } %>
     <div style="margin-top:8px;color:var(--muted)">Usuarios demo: admin@vulnshop.test / admin123 &middot; marcos@vulnshop.test / marcos123</div>
-  </div>
+  </details>
 </div>
 <%- include('partials/foot') %>

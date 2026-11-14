@@ -17,21 +17,20 @@
   </div>
 </div>
 
-<div class="vuln <%= SECURE ? 'safe' : '' %>">
+<details class="vuln <%= SECURE ? 'safe' : '' %>" open>
+  <summary><%= SECURE ? '🛡 Nota de seguridad (TPI) — Perfil y API endurecidos' : '⚠ Nota de seguridad (TPI) — CSRF + JWT mal validado' %></summary>
   <% if (!SECURE) { %>
-    <strong>CSRF + JWT mal validado.</strong><br>
     <strong>CSRF:</strong> el formulario de email no lleva token anti-CSRF ni la
-    cookie usa SameSite, asi que una pagina externa puede cambiar el email de la
-    victima logueada (ver <code>informe/csrf-poc.html</code>).<br>
+    cookie usa SameSite, así que una página externa puede cambiar el email de la
+    víctima logueada (ver <code>informe/csrf-poc.html</code>).<br>
     <strong>JWT:</strong> la API acepta tokens con <code>alg:none</code> o firmados
-    con el secreto debil <code>secret</code>, permitiendo falsificar
+    con el secreto débil <code>secret</code>, permitiendo falsificar
     <code>role:admin</code> y leer <code>/api/admin/users</code>.<br>
     <strong>Fix:</strong> token anti-CSRF + cookie SameSite; validar algoritmo,
-    secreto fuerte y expiracion (modo seguro).
+    secreto fuerte y expiración (modo seguro).
   <% } else { %>
-    <strong>Perfil y API endurecidos.</strong> El cambio de email exige token
-    anti-CSRF y la cookie es SameSite=strict. La API solo acepta JWT HS256 con el
-    secreto fuerte y expiracion vigente.
+    El cambio de email exige token anti-CSRF y la cookie es SameSite=strict. La API
+    solo acepta JWT HS256 con el secreto fuerte y expiración vigente.
   <% } %>
-</div>
+</details>
 <%- include('partials/foot') %>

@@ -14,9 +14,12 @@ router.post('/cart/add/:id', (req, res) => {
   const product = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
   if (product) {
     const cart = getCart(req);
+    let qty = parseInt(req.body.qty, 10);
+    if (isNaN(qty) || qty < 1) qty = 1;
+    if (qty > 20) qty = 20;
     const found = cart.find((i) => i.id === product.id);
-    if (found) found.qty += 1;
-    else cart.push({ id: product.id, name: product.name, price: product.price, emoji: product.emoji, qty: 1 });
+    if (found) found.qty += qty;
+    else cart.push({ id: product.id, name: product.name, price: product.price, emoji: product.emoji, qty });
   }
   res.redirect('/cart');
 });

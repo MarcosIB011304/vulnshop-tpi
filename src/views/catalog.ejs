@@ -1,37 +1,62 @@
 <%- include('partials/head') %>
-<h1>Catalogo</h1>
-<p style="color:var(--muted);margin-top:0">Tienda de ejemplo del TPI.<% if (q) { %> Resultados para "<%= q %>".<% } %></p>
+<%
+  // Datos de presentacion (rating, resenas, ofertas) derivados del id de forma
+  // estable. Es solo visual para que la tienda se vea real; no toca la logica.
+  function stars(r){ var full=Math.round(r); var s=''; for(var i=1;i<=5;i++){ s += i<=full ? '★' : '<span class="off">★</span>'; } return s; }
+  var RATING=[4.8,4.6,4.9,4.7,4.5,4.8,4.6,4.9];
+  var NREV=[214,96,340,128,72,154,88,201];
+  var OFFER={1:23900,4:18500,7:16900};
+%>
 
-<% if (error) { %><div class="error">Error SQL devuelto al usuario: <%= error %></div><% } %>
+<% if (!q) { %>
+<section class="hero">
+  <img class="deco" src="/static/img/1.svg" alt="">
+  <div class="deco2"></div>
+  <h2>Tecnología y hogar al mejor precio</h2>
+  <p>Miles de productos con envío gratis, garantía y cuotas sin interés. Comprá hoy y recibilo en 48 h.</p>
+  <a class="btn" href="#catalogo">Ver ofertas</a>
+</section>
+<% } %>
 
-<div class="grid">
-  <% products.forEach(function(p){ %>
-    <div class="product">
-      <div class="thumb"><%= p.emoji %></div>
-      <div class="info">
-        <div style="font-weight:600"><%= p.name %></div>
-        <div style="color:var(--muted);font-size:12px;margin:2px 0 8px"><%= p.category %></div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span class="price">$ <%= p.price.toLocaleString('es-AR') %></span>
-          <a class="btn" href="/product/<%= p.id %>">Ver</a>
+<div id="catalogo" style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+  <h1><%= q ? 'Resultados' : 'Destacados' %></h1>
+  <span class="muted" style="font-size:14px"><%= products.length %> producto<%= products.length===1?'':'s' %><% if (q) { %> para “<%= q %>”<% } %></span>
+</div>
+
+<% if (error) { %><div class="error"><strong>Error SQL devuelto al usuario:</strong> <%= error %></div><% } %>
+
+<div class="grid" style="margin-top:16px">
+  <% products.forEach(function(p){ var rt=RATING[(p.id-1)%8]||4.7; var nr=NREV[(p.id-1)%8]||50; var off=OFFER[p.id]; %>
+    <article class="prod">
+      <% if (off) { %><span class="badge">OFERTA</span><% } %>
+      <% if (p.price>=20000) { %><span class="badge free">ENVÍO GRATIS</span><% } %>
+      <a class="coverlink" href="/product/<%= p.id %>" aria-label="<%= p.name %>"></a>
+      <div class="thumb"><img src="/static/img/<%= p.id %>.svg" alt="<%= p.name %>" loading="lazy"></div>
+      <div class="pinfo">
+        <div class="cat"><%= p.category %></div>
+        <div class="pname"><%= p.name %></div>
+        <div class="rating"><span class="stars"><%- stars(rt) %></span> <%= rt.toFixed(1) %> <span>(<%= nr %>)</span></div>
+        <div class="foot">
+          <div class="price"><% if (off) { %><span class="old">$ <%= off.toLocaleString('es-AR') %></span><% } %>$ <%= p.price.toLocaleString('es-AR') %></div>
+          <form method="post" action="/cart/add/<%= p.id %>"><button class="btn sm accent" title="Agregar al carrito">Agregar</button></form>
         </div>
       </div>
-    </div>
+    </article>
   <% }); %>
 </div>
-<% if (products.length === 0 && !error) { %><p style="color:var(--muted)">No se encontraron productos.</p><% } %>
+<% if (products.length === 0 && !error) { %><div class="card" style="margin-top:16px">No se encontraron productos para “<%= q %>”. Probá con otra búsqueda.</div><% } %>
 
 <% if (sqlShown) { %>
-  <div class="vuln <%= SECURE ? 'safe' : '' %>">
-    <strong><%= SECURE ? 'Consulta parametrizada (segura)' : 'SQL Injection en el buscador' %></strong>
+  <details class="vuln <%= SECURE ? 'safe' : '' %>" open>
+    <summary><%= SECURE ? '🛡 Nota de seguridad (TPI) — Buscador parametrizado' : '⚠ Nota de seguridad (TPI) — SQL Injection en el buscador' %></summary>
     <pre><code><%= sqlShown %></code></pre>
     <% if (!SECURE) { %>
       El texto del usuario se concatena en la query. Probá en el buscador:
       <code>' UNION SELECT id,email,password,role,id,email FROM users -- </code>
-      para volcar la tabla <code>users</code>. <strong>Fix:</strong> usar parametros (como en el modo seguro).
+      para volcar la tabla <code>users</code>. <strong>Fix:</strong> usar parámetros (como en el modo seguro).
     <% } else { %>
-      El valor del usuario viaja como parametro (<code>?</code>) y nunca se interpreta como SQL.
+      El valor del usuario viaja como parámetro (<code>?</code>) y nunca se interpreta como SQL.
     <% } %>
-  </div>
+  </details>
 <% } %>
 <%- include('partials/foot') %>

@@ -1,52 +1,88 @@
 <%- include('partials/head') %>
-<a href="/" style="font-size:13px">&larr; Volver al catalogo</a>
-<h1><%= product.name %></h1>
-<div class="card" style="display:flex;gap:18px;align-items:center;margin-bottom:16px">
-  <div class="thumb" style="width:120px;height:120px;border-radius:10px;font-size:56px;border:1px solid var(--border)"><%= product.emoji %></div>
+<%
+  function stars(r){ var full=Math.round(r); var s=''; for(var i=1;i<=5;i++){ s += i<=full ? '★' : '<span class="off">★</span>'; } return s; }
+  var avg = reviews.length ? (reviews.reduce(function(a,r){return a+r.rating;},0)/reviews.length) : 4.7;
+  function initial(n){ return (n||'?').trim().charAt(0).toUpperCase(); }
+%>
+<div class="breadcrumb"><a href="/">Inicio</a> › <a href="/?q=<%= encodeURIComponent(product.category) %>"><%= product.category %></a> › <%= product.name %></div>
+
+<div class="card" style="display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:28px;align-items:start">
   <div>
-    <div class="price" style="font-size:22px">$ <%= product.price.toLocaleString('es-AR') %></div>
-    <p style="color:var(--muted)"><%= product.description %></p>
-    <form method="post" action="/cart/add/<%= product.id %>"><button class="btn accent">Agregar al carrito</button></form>
+    <div class="thumb" style="border-radius:12px;overflow:hidden;background:var(--surface2);border:1px solid var(--border)"><img src="/static/img/<%= product.id %>.svg" alt="<%= product.name %>" style="width:100%;aspect-ratio:1/1;object-fit:cover"></div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <% for (var t=0;t<4;t++){ %><div style="width:64px;height:64px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);overflow:hidden;opacity:<%= t===0?1:.55 %>"><img src="/static/img/<%= product.id %>.svg" alt="" style="width:100%;height:100%;object-fit:cover"></div><% } %>
+    </div>
+  </div>
+  <div>
+    <div class="cat" style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600"><%= product.category %></div>
+    <h1 style="margin:4px 0 8px"><%= product.name %></h1>
+    <div class="rating" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:14px">
+      <span class="stars" style="font-size:15px"><%- stars(avg) %></span> <strong style="color:var(--ink)"><%= avg.toFixed(1) %></strong> · <%= reviews.length %> reseña<%= reviews.length===1?'':'s' %>
+    </div>
+    <div class="price" style="font-size:28px;margin-bottom:4px">$ <%= product.price.toLocaleString('es-AR') %></div>
+    <div style="color:var(--accent-dark);font-size:13px;font-weight:600;margin-bottom:16px">💳 6 cuotas sin interés de $ <%= Math.round(product.price/6).toLocaleString('es-AR') %></div>
+    <p class="muted" style="margin:0 0 18px"><%= product.description %></p>
+    <ul style="list-style:none;padding:0;margin:0 0 20px;font-size:13.5px;color:var(--muted);display:grid;gap:7px">
+      <li>🚚 <strong style="color:var(--ink)">Envío gratis</strong> — llega en 48 h</li>
+      <li>✅ <strong style="color:var(--ink)"><%= (product.id*7)%9+4 %> unidades</strong> disponibles</li>
+      <li>↩️ Devolución gratis dentro de los 30 días</li>
+    </ul>
+    <form method="post" action="/cart/add/<%= product.id %>" style="display:flex;gap:10px;align-items:center">
+      <select name="qty" class="field" style="width:76px;margin:0;padding:11px"><option>1</option><option>2</option><option>3</option></select>
+      <button class="btn accent" style="flex:1;max-width:260px">🛒 Agregar al carrito</button>
+    </form>
   </div>
 </div>
 
-<div class="card">
-  <h2 style="margin-top:0">Resenas</h2>
+<div class="card" style="margin-top:20px">
+  <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
+    <h2 style="margin:0">Opiniones</h2>
+    <span class="muted" style="font-size:13px"><span class="stars"><%- stars(avg) %></span> <%= avg.toFixed(1) %> de 5 · <%= reviews.length %> reseña<%= reviews.length===1?'':'s' %></span>
+  </div>
+  <% if (reviews.length===0) { %><p class="muted">Todavía no hay reseñas. ¡Sé el primero en opinar!</p><% } %>
   <% reviews.forEach(function(r){ %>
     <div class="review">
-      <div style="font-weight:600"><%= r.author %> &middot; <%= '★'.repeat(r.rating) %></div>
-      <div style="margin-top:3px">
-        <%# Punto clave del XSS almacenado: %>
-        <% if (SECURE) { %>
-          <%= r.body %>
-        <% } else { %>
-          <%- r.body %>
-        <% } %>
+      <div class="avatar"><%= initial(r.author) %></div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong style="font-size:14px"><%= r.author %></strong>
+          <span class="stars" style="font-size:12px"><%- stars(r.rating) %></span>
+        </div>
+        <div style="margin-top:4px;font-size:14px">
+          <%# Punto clave del XSS almacenado (ver informe): %>
+          <% if (SECURE) { %>
+            <%= r.body %>
+          <% } else { %>
+            <%- r.body %>
+          <% } %>
+        </div>
       </div>
     </div>
   <% }); %>
 
-  <form method="post" action="/product/<%= product.id %>/review" style="margin-top:14px">
-    <div class="field"><label>Tu resena</label><textarea name="body" rows="2" placeholder="Tu opinion..."></textarea></div>
-    <div class="field" style="max-width:120px"><label>Puntaje</label>
-      <select name="rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+  <form method="post" action="/product/<%= product.id %>/review" style="margin-top:18px;border-top:1px solid var(--border);padding-top:16px">
+    <h2 style="font-size:16px;margin:0 0 10px">Dejá tu opinión</h2>
+    <div class="field"><label>Tu reseña</label><textarea name="body" rows="2" placeholder="¿Qué te pareció el producto?"></textarea></div>
+    <div style="display:flex;gap:12px;align-items:end">
+      <div class="field" style="max-width:120px;margin:0"><label>Puntaje</label>
+        <select name="rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+      </div>
+      <button class="btn">Publicar reseña</button>
     </div>
-    <button class="btn">Publicar resena</button>
   </form>
 </div>
 
-<div class="vuln <%= SECURE ? 'safe' : '' %>">
+<details class="vuln <%= SECURE ? 'safe' : '' %>" open>
+  <summary><%= SECURE ? '🛡 Nota de seguridad (TPI) — Reseñas endurecidas' : '⚠ Nota de seguridad (TPI) — XSS almacenado en reseñas' %></summary>
   <% if (!SECURE) { %>
-    <strong>XSS almacenado en resenas.</strong> La resena se muestra sin escapar
-    (<code>&lt;%- r.body %&gt;</code>). Publicá
+    La reseña se muestra sin escapar (<code>&lt;%- r.body %&gt;</code>). Publicá
     <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code> y se ejecuta en
     el navegador de cualquiera que abra el producto. Como la cookie no es HttpOnly,
-    se puede robar la sesion. <strong>Fix:</strong> escapar la salida, cookie
+    se puede robar la sesión. <strong>Fix:</strong> escapar la salida, cookie
     HttpOnly y CSP (modo seguro).
   <% } else { %>
-    <strong>Resenas endurecidas.</strong> La salida se escapa
-    (<code>&lt;%= r.body %&gt;</code>), la cookie es HttpOnly y una cabecera CSP
-    bloquea los scripts inline inyectados.
+    La salida se escapa (<code>&lt;%= r.body %&gt;</code>), la cookie es HttpOnly y
+    una cabecera CSP bloquea los scripts inline inyectados.
   <% } %>
-</div>
+</details>
 <%- include('partials/foot') %>

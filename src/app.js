@@ -18,6 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Archivos estaticos (imagenes de producto, iconos). Mismo origen, asi cargan
+// sin depender de internet y pasan la CSP del modo seguro (default-src 'self').
+app.use('/static', express.static(path.join(__dirname, 'public')));
+
 // Cookie de sesion. En la version segura se marca HttpOnly + SameSite=strict,
 // lo que corta el robo por XSS y buena parte del CSRF. En la vulnerable se deja
 // accesible desde JavaScript (httpOnly:false) y sin SameSite.

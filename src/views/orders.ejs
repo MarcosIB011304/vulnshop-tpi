@@ -17,15 +17,16 @@
   </table>
   <% if (orders.length === 0) { %><p style="color:var(--muted)">Todavia no tenes pedidos.</p><% } %>
 </div>
-<div class="vuln <%= SECURE ? 'safe' : '' %>">
+<details class="vuln <%= SECURE ? 'safe' : '' %>" open>
+  <summary><%= SECURE ? '🛡 Nota de seguridad (TPI) — Pedidos protegidos' : '⚠ Nota de seguridad (TPI) — IDOR en el detalle de pedido' %></summary>
   <% if (!SECURE) { %>
-    <strong>IDOR en el detalle de pedido.</strong> El detalle se abre en
-    <code>/orders/:id</code> sin verificar el propietario. Entrá a
-    <code>/orders/2</code> estando logueado como Marcos y vas a ver el pedido de
-    Lucia. <strong>Fix:</strong> controlar que el pedido sea del usuario (modo seguro).
+    El detalle se abre en <code>/orders/:id</code> sin verificar el propietario.
+    Entrá a <code>/orders/2</code> estando logueado como Marcos y vas a ver el
+    pedido de Lucía. <strong>Fix:</strong> controlar que el pedido sea del usuario
+    (modo seguro).
   <% } else { %>
-    <strong>Pedidos protegidos.</strong> El servidor verifica que el pedido
-    pertenezca al usuario (o que sea admin); si no, responde 403.
+    El servidor verifica que el pedido pertenezca al usuario (o que sea admin); si
+    no, responde 403.
   <% } %>
-</div>
+</details>
 <%- include('partials/foot') %>

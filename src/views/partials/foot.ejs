@@ -1,8 +1,43 @@
 </main>
-<footer style="border-top:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px">
-  <div class="wrap" style="padding:16px 16px">
-    VulnShop &middot; TPI Seguridad en el Desarrollo de Software (UTN) &middot; modo actual: <strong><%= MODE %></strong>
+<footer class="site">
+  <div class="wrap fgrid">
+    <div>
+      <div class="logo" style="font-size:19px;margin-bottom:10px"><img src="/static/img/favicon.svg" alt="" style="width:28px;height:28px"> Vuln<b>Shop</b></div>
+      <p class="fbrand">Tu tienda de tecnología y hogar. Envíos a todo el país, pago protegido y atención personalizada.</p>
+      <div class="pay"><span>VISA</span><span>MASTER</span><span>AMEX</span><span>MERCADO PAGO</span></div>
+    </div>
+    <div>
+      <h4>Comprar</h4>
+      <ul>
+        <li><a href="/?q=Electronica">Electrónica</a></li>
+        <li><a href="/?q=Accesorios">Accesorios</a></li>
+        <li><a href="/?q=Hogar">Hogar</a></li>
+        <li><a href="/">Ofertas</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Ayuda</h4>
+      <ul>
+        <li><a href="/">Cómo comprar</a></li>
+        <li><a href="/">Envíos y entregas</a></li>
+        <li><a href="/">Devoluciones</a></li>
+        <li><a href="/">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Cuenta</h4>
+      <ul>
+        <li><a href="/login">Ingresar</a></li>
+        <li><a href="/orders">Mis pedidos</a></li>
+        <li><a href="/cart">Mi carrito</a></li>
+        <li><a href="/profile">Mi perfil</a></li>
+      </ul>
+    </div>
   </div>
+  <div class="fbar"><div class="wrap">
+    <span>© 2026 VulnShop · TPI Seguridad en el Desarrollo de Software (UTN)</span>
+    <span>Entorno de demostración · modo actual: <strong><%= MODE %></strong></span>
+  </div></div>
 </footer>
 </body>
 </html>
